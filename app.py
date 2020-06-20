@@ -7,12 +7,14 @@ from xml.etree import ElementTree
 app = Flask(__name__)
 
 apiKey = "d240g270y083v227e030m080h1"
-defaultUrl = "https://unipass.customs.go.kr:38010/ext/rest/cargCsclPrgsInfoQry/retrieveCargCsclPrgsInfo?crkyCn={0}&blYy={2}&hblNo={1}"
+defaultUrl = "https://unipass.customs.go.kr:38010" \
+             "/ext/rest/cargCsclPrgsInfoQry/retrieveCargCsclPrgsInfo?" \
+             "crkyCn={0}&blYy={2}&hblNo={1}"
 
 
 @app.route('/getParcelInfo')
 def getParcelInfo():
-    parcelInfoResult = []
+    parcelInfoResult = ""
 
     trackNum = request.args.get("trackNum", 00000000)
     parcelYear = request.args.get("parcelYear", datetime.today().year)
@@ -23,18 +25,16 @@ def getParcelInfo():
 
     parcelInfoElement = rootElement.iter(tag="cargCsclPrgsInfoQryVo")
     for parcelInfo in parcelInfoElement:
-        parcelInfoDict = {}
-        parcelInfoDict["Name"] = parcelInfo.find("prnm").text
-        parcelInfoDict["Location"] = parcelInfo.find("etprCstm").text
-        parcelInfoDict["Weight"] = parcelInfo.find("ttwg").text
-        parcelInfoResult.append(parcelInfoDict)
+        parcelInfoStr = "물품명 : " + str(parcelInfo.find("prnm").text) + "\n" + \
+                        "담당세관 : " + str(parcelInfo.find("etprCstm").text) + "\n" + \
+                        "물품중량 : " + str(parcelInfo.find("ttwg").text)
+        parcelInfoResult = parcelInfoStr
 
-    return str(parcelInfoResult)
+    return parcelInfoResult
 
 @app.route('/getTrackInfo')
 def hello_world():
-    trackInfoResult = []
-
+    trackInfoResult = ""
     trackNum = request.args.get("trackNum", 00000000)
     parcelYear = request.args.get("parcelYear", datetime.today().year)
     unipassUrl = str.format(defaultUrl, apiKey, trackNum, parcelYear)
@@ -45,12 +45,11 @@ def hello_world():
     trackInfoElement = rootElement.iter(tag="cargCsclPrgsInfoDtlQryVo")
 
     for trackInfo in trackInfoElement:
-        trackInfoDict = {}
-        trackInfoDict["Step"] = trackInfo.find("cargTrcnRelaBsopTpcd").text
-        trackInfoDict["Date"] = trackInfo.find("prcsDttm").text
-        trackInfoResult.append(trackInfoDict)
+        trackInfoStr = str(trackInfo.find("prcsDttm").text) + " : " + \
+                       str(trackInfo.find("cargTrcnRelaBsopTpcd").text)
+        trackInfoResult = trackInfoResult + trackInfoStr + "\n"
 
-    return str(trackInfoResult)
+    return trackInfoResult
 
 
 if __name__ == '__main__':
