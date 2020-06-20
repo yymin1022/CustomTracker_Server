@@ -12,6 +12,8 @@ defaultUrl = "https://unipass.customs.go.kr:38010/ext/rest/cargCsclPrgsInfoQry/r
 
 @app.route('/getTrackInfo')
 def hello_world():
+    customTrackResult = []
+
     trackNum = request.args.get("trackNum", 00000000)
     parcelYear = request.args.get("parcelYear", datetime.today().year)
     unipassUrl = str.format(defaultUrl, apiKey, trackNum, parcelYear)
@@ -19,13 +21,23 @@ def hello_world():
     unipassResponce = urlopen(unipassUrl).read()
     rootElement = ElementTree.fromstring(unipassResponce)
 
-    customProcessElement = rootElement.iter(tag="cargCsclPrgsInfoDtlQryVo")
+    customSimpleProcessElement = rootElement.iter(tag="cargCsclPrgsInfoQryVo")
+    for currentProcess in customSimpleProcessElement:
+        currentProcessInfo = {}
+        currentProcessInfo["Name"] = currentProcess.find("prnm").text
+        currentProcessInfo["Location"] = currentProcess.find("etprCstm").text
+        currentProcessInfo["Weight"] = currentProcess.find("ttwg").text
+        customTrackResult.append(currentProcessInfo)
 
-    for currentProcess in customProcessElement:
-        print(currentProcess.find("cargTrcnRelaBsopTpcd").text)
+    customDetailProcessElement = rootElement.iter(tag="cargCsclPrgsInfoDtlQryVo")
 
+    for currentProcess in customDetailProcessElement:
+        currentProcessDict = {}
+        currentProcessDict["Step"] = currentProcess.find("cargTrcnRelaBsopTpcd").text
+        currentProcessDict["Date"] = currentProcess.find("prcsDttm").text
+        customTrackResult.append(currentProcessDict)
 
-    return unipassResponce
+    return str(customTrackResult)
 
 
 if __name__ == '__main__':
