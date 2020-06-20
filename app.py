@@ -1,13 +1,19 @@
+from datetime import datetime
 from flask import Flask
+from flask import request
 
 app = Flask(__name__)
 
 apiKey = "d240g270y083v227e030m080h1"
-unipassUrl = str.format("https://unipass.customs.go.kr:38010/ext/rest/cargCsclPrgsInfoQry/retrieveCargCsclPrgsInfo?crkyCn={0}&blYy=2020&hblNo=6077876695710", apiKey)
+defaultUrl = "https://unipass.customs.go.kr:38010/ext/rest/cargCsclPrgsInfoQry/retrieveCargCsclPrgsInfo?crkyCn={0}&blYy={2}&hblNo={1}"
 
 
-@app.route('/')
+@app.route('/getTrackInfo')
 def hello_world():
+    trackNum = request.args.get("trackNum", 00000000)
+    parcelYear = request.args.get("parcelYear", datetime.today().year)
+    unipassUrl = str.format(defaultUrl, apiKey, trackNum, parcelYear)
+
     return unipassUrl
 
 
