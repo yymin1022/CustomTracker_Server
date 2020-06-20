@@ -1,6 +1,8 @@
 from datetime import datetime
 from flask import Flask
 from flask import request
+from urllib.request import urlopen
+from xml.etree import ElementTree
 
 app = Flask(__name__)
 
@@ -14,7 +16,16 @@ def hello_world():
     parcelYear = request.args.get("parcelYear", datetime.today().year)
     unipassUrl = str.format(defaultUrl, apiKey, trackNum, parcelYear)
 
-    return unipassUrl
+    unipassResponce = urlopen(unipassUrl).read()
+    rootElement = ElementTree.fromstring(unipassResponce)
+
+    customProcessElement = rootElement.iter(tag="cargCsclPrgsInfoDtlQryVo")
+
+    for currentProcess in customProcessElement:
+        print(currentProcess.find("cargTrcnRelaBsopTpcd").text)
+
+
+    return unipassResponce
 
 
 if __name__ == '__main__':
