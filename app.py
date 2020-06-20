@@ -1,8 +1,8 @@
 from datetime import datetime
 from flask import Flask
 from flask import request
-from urllib.request import urlopen
 from xml.etree import ElementTree
+import urllib
 
 app = Flask(__name__)
 
@@ -20,7 +20,7 @@ def getParcelInfo():
     parcelYear = request.args.get("parcelYear", datetime.today().year)
     unipassUrl = str.format(defaultUrl, apiKey, trackNum, parcelYear)
 
-    unipassResponce = urlopen(unipassUrl).read()
+    unipassResponce = urllib.urlopen(unipassUrl).read()
     rootElement = ElementTree.fromstring(unipassResponce)
 
     parcelInfoElement = rootElement.iter(tag="cargCsclPrgsInfoQryVo")
