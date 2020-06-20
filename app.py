@@ -25,9 +25,9 @@ def getParcelInfo():
 
     parcelInfoElement = rootElement.iter(tag="cargCsclPrgsInfoQryVo")
     for parcelInfo in parcelInfoElement:
-        parcelInfoStr = "물품명 : " + str(parcelInfo.find("prnm").text) + "\n" + \
-                        "담당세관 : " + str(parcelInfo.find("etprCstm").text) + "\n" + \
-                        "물품중량 : " + str(parcelInfo.find("ttwg").text)
+        parcelInfoStr = str(parcelInfo.find("prnm").text) + "\n" + \
+                        str(parcelInfo.find("etprCstm").text) + "\n" + \
+                        str(parcelInfo.find("ttwg").text)
         parcelInfoResult = parcelInfoStr
 
     return parcelInfoResult
