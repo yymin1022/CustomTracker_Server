@@ -12,7 +12,7 @@ defaultUrl = "https://unipass.customs.go.kr:38010/ext/rest/cargCsclPrgsInfoQry/r
 
 @app.route('/getParcelInfo')
 def getParcelInfo():
-    customTrackResult = []
+    parcelInfoResult = []
 
     trackNum = request.args.get("trackNum", 00000000)
     parcelYear = request.args.get("parcelYear", datetime.today().year)
@@ -21,19 +21,19 @@ def getParcelInfo():
     unipassResponce = urlopen(unipassUrl).read()
     rootElement = ElementTree.fromstring(unipassResponce)
 
-    customSimpleProcessElement = rootElement.iter(tag="cargCsclPrgsInfoQryVo")
-    for currentProcess in customSimpleProcessElement:
-        currentProcessInfo = {}
-        currentProcessInfo["Name"] = currentProcess.find("prnm").text
-        currentProcessInfo["Location"] = currentProcess.find("etprCstm").text
-        currentProcessInfo["Weight"] = currentProcess.find("ttwg").text
-        customTrackResult.append(currentProcessInfo)
+    parcelInfoElement = rootElement.iter(tag="cargCsclPrgsInfoQryVo")
+    for parcelInfo in parcelInfoElement:
+        parcelInfoDict = {}
+        parcelInfoDict["Name"] = parcelInfo.find("prnm").text
+        parcelInfoDict["Location"] = parcelInfo.find("etprCstm").text
+        parcelInfoDict["Weight"] = parcelInfo.find("ttwg").text
+        parcelInfoResult.append(parcelInfoDict)
 
-    return str(customTrackResult)
+    return str(parcelInfoResult)
 
 @app.route('/getTrackInfo')
 def hello_world():
-    customTrackResult = []
+    trackInfoResult = []
 
     trackNum = request.args.get("trackNum", 00000000)
     parcelYear = request.args.get("parcelYear", datetime.today().year)
@@ -42,15 +42,15 @@ def hello_world():
     unipassResponce = urlopen(unipassUrl).read()
     rootElement = ElementTree.fromstring(unipassResponce)
 
-    customDetailProcessElement = rootElement.iter(tag="cargCsclPrgsInfoDtlQryVo")
+    trackInfoElement = rootElement.iter(tag="cargCsclPrgsInfoDtlQryVo")
 
-    for currentProcess in customDetailProcessElement:
-        currentProcessDict = {}
-        currentProcessDict["Step"] = currentProcess.find("cargTrcnRelaBsopTpcd").text
-        currentProcessDict["Date"] = currentProcess.find("prcsDttm").text
-        customTrackResult.append(currentProcessDict)
+    for trackInfo in trackInfoElement:
+        trackInfoDict = {}
+        trackInfoDict["Step"] = trackInfo.find("cargTrcnRelaBsopTpcd").text
+        trackInfoDict["Date"] = trackInfo.find("prcsDttm").text
+        trackInfoResult.append(trackInfoDict)
 
-    return str(customTrackResult)
+    return str(trackInfoResult)
 
 
 if __name__ == '__main__':
