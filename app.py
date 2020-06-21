@@ -52,7 +52,7 @@ def hello_world():
     for trackInfo in trackInfoElement:
         trackInfoStr = str(trackInfo.find("prcsDttm").text) + " : " + \
                        str(trackInfo.find("cargTrcnRelaBsopTpcd").text)
-        trackInfoResult = trackInfoResult + trackInfoStr + "\n"
+        trackInfoResult = trackInfoResult + trackInfoStr + "&&\n"
 
     return trackInfoResult
 
